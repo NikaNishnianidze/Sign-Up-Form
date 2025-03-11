@@ -154,3 +154,28 @@ export const FooterSpan = styled.span`
   @media screen and (min-width: 1440px) {
   }
 `;
+
+export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  @media screen and (min-width: 1440px) {
+    gap: 20px;
+  }
+`;
+
+export const InputDiv = styled.div`
+  position: relative;
+`;
+
+export const ErrorPar = styled.p`
+  text-align: right;
+  margin-top: 6px;
+  color: #ff7979;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 11px;
+  line-height: 100%;
+`;
