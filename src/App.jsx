@@ -70,12 +70,12 @@ function App() {
     {
       label: "Last Name",
       field: "lastName",
-      error: errors.email || "Looks like this is not an email",
+      error: "Last Name Cannot be empty",
     },
     {
       label: "Email Address",
       field: "email",
-      error: "Email cannot be empty",
+      error: errors.email || "Email cannot be empty",
     },
     { label: "Password", field: "password", error: "Password cannot be empty" },
   ];
