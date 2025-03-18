@@ -19,6 +19,8 @@ import {
 import { useState } from "react";
 import Error from "../public/images/icon-error.svg";
 
+const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
 function App() {
   const [inputValues, setInputValues] = useState({
     firstName: "",
@@ -26,9 +28,37 @@ function App() {
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
 
   const giveInput = (e, field) => {
-    setInputValues({ ...inputValues, [field]: e.target.value });
+    const value = e.target.value;
+
+    if (field === "email") {
+      if (value && !emailRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "Looks like this is not an email",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "",
+        }));
+      }
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: value === "" ? `${field} cannot be empty` : "",
+      }));
+    }
+
+    setInputValues({ ...inputValues, [field]: value });
   };
 
   const inputs = [
@@ -40,12 +70,12 @@ function App() {
     {
       label: "Last Name",
       field: "lastName",
-      error: "Last Name cannot be empty",
+      error: errors.email || "Looks like this is not an email",
     },
     {
       label: "Email Address",
       field: "email",
-      error: "Looks like this is not an email",
+      error: "Email cannot be empty",
     },
     { label: "Password", field: "password", error: "Password cannot be empty" },
   ];
@@ -75,14 +105,14 @@ function App() {
                     placeholder={item.label}
                     style={{
                       border:
-                        inputValues[item.field] === ""
+                        inputValues[item.field] === "" || errors[item.field]
                           ? "1px solid #FF7979"
                           : "",
                     }}
                     value={inputValues[item.field]}
                     onChange={(e) => giveInput(e, item.field)}
                   />
-                  {inputValues[item.field] === "" ? (
+                  {inputValues[item.field] === "" || errors[item.field] ? (
                     <img
                       style={{
                         position: "absolute",
@@ -94,13 +124,14 @@ function App() {
                       alt="error"
                     />
                   ) : null}
-                  {inputValues[item.field] === "" ? (
+                  {inputValues[item.field] === "" || errors[item.field] ? (
                     <ErrorPar>{item.error}</ErrorPar>
                   ) : null}
                 </InputDiv>
               ))}
             </InputContainer>
             <ClaimButton>CLAIM YOUR FREE TRIAL</ClaimButton>
+            <p>{message}</p>
             <FooterPar>
               By clicking the button, you are agreeing to our
               <FooterSpan> Terms and Services</FooterSpan>
