@@ -15,6 +15,7 @@ import {
   InputContainer,
   InputDiv,
   ErrorPar,
+  FormContainer,
 } from "./MainStyles";
 import { useState } from "react";
 import Error from "../public/images/icon-error.svg";
@@ -36,31 +37,6 @@ function App() {
     password: "",
   });
 
-  const giveInput = (e, field) => {
-    const value = e.target.value;
-
-    if (field === "email") {
-      if (value && !emailRegex.test(value)) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          email: "Looks like this is not an email",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          email: "",
-        }));
-      }
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [field]: value === "" ? `${field} cannot be empty` : "",
-      }));
-    }
-
-    setInputValues({ ...inputValues, [field]: value });
-  };
-
   const inputs = [
     {
       label: "First Name",
@@ -80,6 +56,59 @@ function App() {
     { label: "Password", field: "password", error: "Password cannot be empty" },
   ];
 
+  const giveInput = (e, field) => {
+    const value = e.target.value;
+    let errorMessage = "";
+    let borderStyle = "";
+
+    if (field === "email") {
+      if (value && !emailRegex.test(value)) {
+        errorMessage = "Looks like this is not an email";
+        borderStyle = "1px solid #FF7979";
+      } else {
+        errorMessage = "";
+        borderStyle = value === "" ? "1px solid #FF7979" : "";
+      }
+    } else {
+      errorMessage = value === "" ? `${field} cannot be empty` : "";
+      borderStyle = value === "" || errorMessage ? "1px solid #FF7979" : "";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: errorMessage,
+    }));
+
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    let isValid = true;
+    inputs.forEach((item) => {
+      if (inputValues[item.field] === "" || errors[item.field]) {
+        isValid = false;
+      }
+    });
+
+    if (isValid) {
+      setMessage("Form submitted successfully!");
+    } else {
+      setMessage("Please fill in all required fields correctly.");
+    }
+  };
+
+  const getInputBorderStyle = (field) => {
+    if (inputValues[field] === "" || errors[field]) {
+      return "1px solid #FF7979";
+    }
+    return "";
+  };
+
   return (
     <>
       <GlobalStyles />
@@ -97,41 +126,41 @@ function App() {
             Try it free 7 days <ButtonSpan>then $20/mo. thereafter</ButtonSpan>
           </TopButton>
           <MainContainer>
-            <InputContainer>
-              {inputs.map((item, index) => (
-                <InputDiv key={index}>
-                  <InfoInput
-                    type="text"
-                    placeholder={item.label}
-                    style={{
-                      border:
-                        inputValues[item.field] === "" || errors[item.field]
-                          ? "1px solid #FF7979"
-                          : "",
-                    }}
-                    value={inputValues[item.field]}
-                    onChange={(e) => giveInput(e, item.field)}
-                  />
-                  {inputValues[item.field] === "" || errors[item.field] ? (
-                    <img
+            <FormContainer onSubmit={handleSubmit}>
+              <InputContainer>
+                {inputs.map((item, index) => (
+                  <InputDiv key={index}>
+                    <InfoInput
+                      type={item.field == "password" ? "password" : "text"}
+                      placeholder={item.label}
                       style={{
-                        position: "absolute",
-                        top: "36%",
-                        right: "10px",
-                        transform: "translateY(-50%)",
+                        border: getInputBorderStyle(item.field),
                       }}
-                      src={Error}
-                      alt="error"
+                      value={inputValues[item.field]}
+                      onChange={(e) => giveInput(e, item.field)}
                     />
-                  ) : null}
-                  {inputValues[item.field] === "" || errors[item.field] ? (
-                    <ErrorPar>{item.error}</ErrorPar>
-                  ) : null}
-                </InputDiv>
-              ))}
-            </InputContainer>
-            <ClaimButton>CLAIM YOUR FREE TRIAL</ClaimButton>
-            <p>{message}</p>
+                    {inputValues[item.field] === "" || errors[item.field] ? (
+                      <img
+                        style={{
+                          position: "absolute",
+                          top: "36%",
+                          right: "10px",
+                          transform: "translateY(-50%)",
+                        }}
+                        src={Error}
+                        alt="error"
+                      />
+                    ) : null}
+                    {inputValues[item.field] === "" || errors[item.field] ? (
+                      <ErrorPar>{item.error}</ErrorPar>
+                    ) : null}
+                  </InputDiv>
+                ))}
+              </InputContainer>
+              <ClaimButton type="submit">CLAIM YOUR FREE TRIAL</ClaimButton>
+              <p>{message}</p>
+            </FormContainer>
+
             <FooterPar>
               By clicking the button, you are agreeing to our
               <FooterSpan> Terms and Services</FooterSpan>

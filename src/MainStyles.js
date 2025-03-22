@@ -179,3 +179,5 @@ export const ErrorPar = styled.p`
   font-size: 11px;
   line-height: 100%;
 `;
+
+export const FormContainer = styled.form``;
