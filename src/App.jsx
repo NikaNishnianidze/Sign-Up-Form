@@ -96,7 +96,7 @@ function App() {
     });
 
     if (isValid) {
-      setMessage("Form submitted successfully!");
+      setMessage("");
     } else {
       setMessage("Please fill in all required fields correctly.");
     }
